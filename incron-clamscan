@@ -1,7 +1,9 @@
 #!/bin/bash 
 
 quarantinePath="$HOME/toxic"
-mkdir "$quarantinePath"
+if [ ! -d "$quarantinePath" ]; then
+  mkdir "$quarantinePath"
+fi
 
 filePath="$1"
 if [ "${filePath##*.}" = "part" ]; then

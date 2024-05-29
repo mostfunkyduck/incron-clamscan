@@ -1,1 +1,1 @@
-/home/jack/Downloads	IN_CLOSE_WRITE,IN_MOVE	/usr/local/sbin/incron-clamscan "$$(echo '$@/$#' | sed 's#\\##g')" >> /var/log/incron-clamscan/incron-clamscan.log 2>&1
+/home/jack/Downloads	IN_CLOSE_WRITE,IN_MOVED_TO	/usr/local/sbin/incron-clamscan "$$(echo '$@/$#' | sed 's#\\##g')" >> /var/log/incron-clamscan/incron-clamscan.log 2>&1
