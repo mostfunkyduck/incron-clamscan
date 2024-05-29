@@ -1,39 +1,29 @@
-#!/bin/bash
+#!/bin/bash 
 
-if [ $# != 1 ]; then
-  echo "usage: $0 <path to file>"
-  DISPLAY=:1 notify-send -u CRITICAL --expire-time 5000 -- "Scan Errors" "$1 scan never started, invalid script invocation"
-  exit 1
-fi
-
-if [ "${1##*.}" = "part" ]; then
-  echo "$1: File is a partial download, ignoring"
+filePath="$1"
+if [ "${filePath##*.}" = "part" ]; then
+  echo "$filePath: File is a partial download, ignoring"
   exit 0
 fi
 
-if [ ! -s "$1" ]; then
-  echo "$1 is 0 length, ignoring"
+if [ -d "$filePath" ]; then
+  echo "$filePath is a directory, ignoring"
   exit 0
 fi
 
-if [ -d "$1" ]; then
-  echo "$1 is a directory, ignoring"
-  exit 0
-fi
-
-DISPLAY=:1 notify-send --expire-time 5000 -- "Scan Started" "$1"
-clamscan -r --move /home/jack/toxic "$1"
+DISPLAY=:0.0 notify-send --expire-time 5000 -- "Scan Started" "$filePath"
+clamscan -r --move /home/jack/toxic -- "$filePath"
 case $? in
   0)
-    DISPLAY=:1 notify-send --expire-time 5000 -- "Scan Completed" "$1 is clean"
+    DISPLAY=:0.0 notify-send --expire-time 5000 -- "Scan Completed" "$filePath is clean"
     ;;
   1)
-    DISPLAY=:1 notify-send -u CRITICAL --expire-time 5000 -- "Virus Detected!" "$1 is quarantined!"
+    DISPLAY=:0.0 notify-send -u CRITICAL --expire-time 5000 -- "Virus Detected!" "$filePath is quarantined!"
     ;;
   2)
-    DISPLAY=:1 notify-send -u CRITICAL --expire-time 5000 -- "Scan Errors" "$1 scan completed with errors, see logfile"
+    DISPLAY=:0.0 notify-send -u CRITICAL --expire-time 5000 -- "Scan Errors" "$filePath scan completed with errors, see logfile"
     ;;
   default)
-    DISPLAY=:1 notify-send -u CRITICAL --expire-time 5000 -- "Scan Errors" "$1 scan completed with weird exit code"
+    DISPLAY=:0.0 notify-send -u CRITICAL --expire-time 5000 -- "Scan Errors" "$filePath scan completed with weird exit code"
     ;;
 esac

@@ -1,0 +1,5 @@
+# What it does
+This will set up incron to run clamscan on every download to /home/jack/Downloads. The script badgers you with notify-send too.
+
+# What it is
+a script to put in /usr/local/sbin/incron-clamscan and an incron-table to use with `incrontab -e`
