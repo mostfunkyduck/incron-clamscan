@@ -1,15 +1,16 @@
-# What it does
-This will set up incron to run clamscan on every download to /home/jack/Downloads. The script badgers you with notify-send too.
+# What this is
+This will set up incron to run clamscan on files being added to a monitored directory (defaults to my Downloads directory on this laptop, will make it more generic eventually). The script badgers you with notify-send too.
 
-# What it is
-a script to put in /usr/local/sbin/incron-clamscan and an incron-table to use with `incrontab -e`
+This is done with a script that is put in /usr/local/sbin/incron-clamscan and an incron-table to use with `incrontab`
+
+**This is very "works on my machine" code, so issues may abound.**
 
 # How to use it
 
 ## Dependencies
 * notify-send (libnotify, i use the version in brew)
 * incron
-** this was done so that it would be executed as the current user, avoiding the use of root perms, so that user needs to be added to the incron group `sudo adduser $TheUser incron`
+  * this was done so that it would be executed as the current user, avoiding the use of root perms, so that user needs to be added to the incron group `sudo adduser $TheUser incron`
 * clamav and clamav-freshclam
 
 ## Deploying
@@ -32,5 +33,4 @@ a script to put in /usr/local/sbin/incron-clamscan and an incron-table to use wi
 
 * Check journalctl for incron issues
 * Check `/var/log/incron-clamscan/incron-clamscan.log` for script/clamscan issues
-* This is very "works on my machine" code, so dependency issues may abound.
 * If notify-send is misbehaving, there may be an issue with the DISPLAY variable in the script
