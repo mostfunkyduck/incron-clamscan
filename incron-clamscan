@@ -1,5 +1,8 @@
 #!/bin/bash 
 
+quarantinePath="$HOME/toxic"
+mkdir "$quarantinePath"
+
 filePath="$1"
 if [ "${filePath##*.}" = "part" ]; then
   echo "$filePath: File is a partial download, ignoring"
@@ -12,7 +15,7 @@ if [ -d "$filePath" ]; then
 fi
 
 DISPLAY=:0.0 notify-send --expire-time 5000 -- "Scan Started" "$filePath"
-clamscan -r --move /home/jack/toxic -- "$filePath"
+clamscan -r --move "$quarantinePath" -- "$filePath"
 case $? in
   0)
     DISPLAY=:0.0 notify-send --expire-time 5000 -- "Scan Completed" "$filePath is clean"
