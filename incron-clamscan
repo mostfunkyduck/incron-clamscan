@@ -1,9 +1,32 @@
 #!/bin/bash 
 
+notify-critical() {
+  # shellcheck disable=SC2068
+  DISPLAY=:0.0 notify-send -u CRITICAL -- "$@"
+}
+notify() {
+  # shellcheck disable=SC2068
+  DISPLAY=:0.0 notify-send --expire-time 5000 -- "$@"
+}
+
 quarantinePath="$HOME/toxic"
+unscannablePath="$HOME/clam-unscannable"
 if [ ! -d "$quarantinePath" ]; then
   mkdir "$quarantinePath"
 fi
+
+if [ ! -d "$unscannablePath" ]; then
+  mkdir "$unscannablePath"
+fi
+if command -v clamdscan >/dev/null 2>&1 && pgrep clamd >/dev/null 2>&1; then
+  clamscanner="clamdscan"
+elif command -v clamscanner >/dev/null 2>&1; then
+  clamscanner="clamscan"
+else
+  notify "error scanning for viruses: could not find a clam scanner!"
+  exit 1
+fi
+echo "scanner: $clamscanner"
 
 filePath="$1"
 if [ "${filePath##*.}" = "part" ]; then
@@ -12,23 +35,23 @@ if [ "${filePath##*.}" = "part" ]; then
 fi
 
 if [ -d "$filePath" ]; then
-  echo "$filePath is a directory, ignoring"
-  exit 0
+  echo "$filePath is a directory, ignoring" exit 0
 fi
 
-DISPLAY=:0.0 notify-send --expire-time 5000 -- "Scan Started" "$filePath"
-clamscan -r --move "$quarantinePath" -- "$filePath"
+notify "Scan Started" "$filePath"
+$clamscanner -r --move "$quarantinePath" -- "$filePath"
 case $? in
   0)
-    DISPLAY=:0.0 notify-send --expire-time 5000 -- "Scan Completed" "$filePath is clean"
+    notify-critical "Scan Completed" "$filePath is clean"
     ;;
   1)
-    DISPLAY=:0.0 notify-send -u CRITICAL --expire-time 5000 -- "Virus Detected!" "$filePath is quarantined!"
+    notify-critical "Virus Detected!" "$filePath is quarantined!"
     ;;
   2)
-    DISPLAY=:0.0 notify-send -u CRITICAL --expire-time 5000 -- "Scan Errors" "$filePath scan completed with errors, see logfile"
+    notify-critical "Scan Errors" "$filePath scan completed with errors, see logfile"
+    mv "$filePath" "$unscannablePath"
     ;;
   default)
-    DISPLAY=:0.0 notify-send -u CRITICAL --expire-time 5000 -- "Scan Errors" "$filePath scan completed with weird exit code"
+    notify-critical "Scan Errors" "$filePath scan completed with weird exit code"
     ;;
 esac
